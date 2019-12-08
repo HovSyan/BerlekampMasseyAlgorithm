@@ -15,55 +15,52 @@ public class Main {
       s[i] = getIntegerInput("s" + i);
     }
 
-    int[] result = computeLinearComplexity(s, p);
-    String resultPolynomial = getPolynomialFromArray(result);
+    Polynomial resultPolynomial = berlecampMessayAlgorithm(s, p);
 
-    System.out.println("L = " + result.length);
-    System.out.println("C(X) = " + resultPolynomial);
+    System.out.printf("L = %d\n", resultPolynomial.length() - 1);
+    System.out.printf("C(X) = %s\n", resultPolynomial);
   }
 
-  public static int[] computeLinearComplexity(int[] s, int p) {
-    return berlecampMessayAlgorithm(s, p);
-  }
+  private static Polynomial berlecampMessayAlgorithm(int[] s, int p) {
+    Polynomial c = new Polynomial(new int[]{1});
+    Polynomial b = new Polynomial(new int[]{1});
 
-  private static int[] berlecampMessayAlgorithm(int[] s, int p) {
-    final int n = s.length;
-
-    int N = 0;
     int L = 0;
-    int m = -1;
+    int z = 1;
+    int n = 0;
+    int delta = 1;
 
-    int[] b = new int[n];
-    int[] t = new int[n];
-    int[] c = new int[n];
+    while(n < s.length) {
+      int d = s[n];
+      for (int i = 1; i <= L; i++) {
+        d += c.getCoefficients()[i] * s[n - i];
+      }
+      d %= p;
 
-    b[0] = 1;
-    c[0] = 1;
+      if (d != 0) {
+        Polynomial t = new Polynomial(c.getCoefficients());
 
-    while (N < n) {
-      int d = s[N];
-      for(int i = 1; i <= L; i++) {
-        d = ((s[N - i] * c[i]) + d) % p;
+        int deltaInverse = getInverse(delta, p);
+        c = new Polynomial(Polynomial.subtract(c,
+          Polynomial.multiply(b, Polynomial.getOneVariablePolynomial(d * deltaInverse, z), p), p
+        ).getCoefficients());
+
+        if (2 * L <= n) {
+          L = n + 1 - L;
+          z = 1;
+          b = new Polynomial(t.getCoefficients());
+          delta = d;
+        } else {
+          z++;
+        }
+      } else {
+        z++;
       }
 
-      if(d != 0) {
-        System.arraycopy(c, 0, t, 0, c.length);
-
-        for(int j = 0; j < n - N + m; j++) {
-          c[N - m + j] = (c[N - m + j] + b[j]) % p;
-        }
-
-        if(2 * L <= N) {
-          L = N + 1 - L;
-          m = N;
-          System.arraycopy(t, 0, b, 0, t.length);
-        }
-      }
-
-      N++;
+      n++;
     }
 
-    return Arrays.copyOfRange(c, 1, L + 1);
+    return c;
   }
 
   private static int getIntegerInput(String variableName) {
@@ -76,26 +73,13 @@ public class Main {
     return stdIn.nextInt();
   }
 
-  private static String getPolynomialFromArray(int[] arr) {
-    StringBuilder result = new StringBuilder("1");
-
-    for(int i = 0; i < arr.length; i++) {
-      if(arr[i] == 1) {
-        result.append(" + ").append("x");
-        if(i != 0) {
-          result.append("^").append(i + 1);
-        }
-        continue;
-      }
-
-      if(arr[i] != 0) {
-        result.append(" + ").append(arr[i]).append("x");
-        if(i != 0) {
-          result.append("^").append(i + 1);
-        }
+  public static int getInverse(int n, int modulo) {
+    for(int i = 1; i < modulo; i++) {
+      if((i * n) % modulo == 1) {
+        return i;
       }
     }
 
-    return result.toString();
+    return 0;
   }
 }

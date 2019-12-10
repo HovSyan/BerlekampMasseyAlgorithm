@@ -24,12 +24,13 @@ public class Polynomial {
 
     for(int i = 0; i < len; i++) {
       if(i >= p1.length()) {
-        resultCoefficients[i] = p2.getCoefficients()[i];
+        int sub = (-p2.getCoefficients()[i]) + modulo;
+        resultCoefficients[i] = sub % modulo;
       } else if(i >= p2.length()) {
         resultCoefficients[i] = p1.getCoefficients()[i];
       } else {
-        resultCoefficients[i] = (Math.abs(p1.getCoefficients()[i] - p2.getCoefficients()[i]) * (modulo - 1))
-          % modulo;
+        int sub = (p1.getCoefficients()[i] - p2.getCoefficients()[i]) + modulo;
+        resultCoefficients[i] = sub % modulo;
       }
     }
 

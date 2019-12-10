@@ -38,17 +38,18 @@ public class Main {
       d %= p;
 
       if (d != 0) {
-        Polynomial t = new Polynomial(c.getCoefficients());
+        Polynomial t = c;
 
         int deltaInverse = getInverse(delta, p);
-        c = new Polynomial(Polynomial.subtract(c,
+        c = new Polynomial(Polynomial.subtract(
+          c,
           Polynomial.multiply(b, Polynomial.getOneVariablePolynomial(d * deltaInverse, z), p), p
         ).getCoefficients());
 
         if (2 * L <= n) {
           L = n + 1 - L;
           z = 1;
-          b = new Polynomial(t.getCoefficients());
+          b = t;
           delta = d;
         } else {
           z++;

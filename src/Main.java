@@ -73,13 +73,28 @@ public class Main {
     return stdIn.nextInt();
   }
 
-  public static int getInverse(int n, int modulo) {
-    for(int i = 1; i < modulo; i++) {
-      if((i * n) % modulo == 1) {
-        return i;
-      }
+  public static int getInverse(int a, int m) {
+    // Euclidean algorithm (extended)
+    int m0 = m;
+    int y = 1, x = 0;
+
+    while (m > 1)
+    {
+      int q = m / a;
+      int t = a;
+
+      a = m % a;
+      m = t;
+      t = y;
+
+      y = x - q * y;
+      x = t;
     }
 
-    return 0;
+    // Make x positive
+    if (x < 0)
+      x += m0;
+
+    return x;
   }
 }

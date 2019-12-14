@@ -22,12 +22,12 @@ public class Main {
   }
 
   private static Polynomial berlecampMessayAlgorithm(int[] s, int p) {
-    Polynomial c = new Polynomial(new int[]{1});
+    Polynomial c = new Polynomial(new int[]{1});  // result register properties
     Polynomial b = new Polynomial(new int[]{1});
 
-    int L = 0;
+    int L = 0;  // result register length
     int z = 1;
-    int n = 0;
+    int n = 0;  // current check position in s[] sequence
     int delta = 1;
 
     while(n < s.length) {
@@ -37,6 +37,13 @@ public class Main {
       }
       d %= p;
 
+      // s[L] = -(c[L] * s[0] + ... + c[1] * s[L - 1]).
+      // d = s[L] + (c[L] * s[0] + ... + c[1] * s[L - 1]).
+      // So d == 0 means that C(x) register properties generate
+      // s[0], s[1], ..., s[L - 1], s[L] sequence and need to check the
+      // next.
+      // d != 0 means that C(x) register properties fail on s[L],
+      // hence must be replaced.
       if (d != 0) {
         Polynomial t = c;
 
